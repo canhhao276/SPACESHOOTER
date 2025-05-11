@@ -7,7 +7,7 @@ public class Player extends GameObject {
 
     private static final int WIDTH = 80;
     private static final int HEIGHT = 80;
-    private static final double SPEED = 4;
+    private static final double SPEED = 2;
 
     private boolean moveLeft;
     private boolean moveRight;
@@ -72,9 +72,6 @@ public class Player extends GameObject {
             gc.fillRect(x - WIDTH / 2, y - HEIGHT / 2, WIDTH, HEIGHT);
         }
 
-        // Vẽ máu (chữ nhỏ phía trên)
-        gc.setFill(Color.WHITE);
-        gc.fillText("HP: " + health, x - 15, y - HEIGHT / 2 - 5);
     }
 
     public void setMoveLeft(boolean moveLeft) {

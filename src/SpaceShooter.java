@@ -30,8 +30,7 @@ public class SpaceShooter extends Application {
     private GraphicsContext gc;
 
     private Label scoreLabel;
-    private Label livesLabel;
-
+    private Image heartImage;
     private Image backgroundImage;
 
     public static void main(String[] args) {
@@ -50,12 +49,7 @@ public class SpaceShooter extends Application {
         scoreLabel.setLayoutX(10);
         scoreLabel.setLayoutY(10);
 
-        livesLabel = new Label("Lives: " + numLives);
-        livesLabel.setTextFill(Color.WHITE);
-        livesLabel.setLayoutX(10);
-        livesLabel.setLayoutY(30);
-
-        root.getChildren().addAll(scoreLabel, livesLabel);
+        root.getChildren().add(scoreLabel);
 
         scene = new Scene(root, WIDTH, HEIGHT, Color.BLACK);
         primaryStage.setScene(scene);
@@ -69,6 +63,13 @@ public class SpaceShooter extends Application {
             System.out.println("Không thể tải ảnh nền: " + e.getMessage());
             backgroundImage = null; // Fallback nếu không tải được ảnh
         }
+        // Tải ảnh trái tim
+        try {
+            heartImage = new Image("file:res/heart.png");
+        } catch (Exception e) {
+            System.out.println("Không thể tải ảnh heart: " + e.getMessage());
+            heartImage = null; // Fallback nếu không tải được ảnh
+        }      
 
         initGame();
         initEventHandlers();
@@ -113,35 +114,40 @@ public class SpaceShooter extends Application {
         });
     }
 
-    private void update() {
-        if (!gameRunning) return;
+private void update() {
+    if (!gameRunning) return;
 
-        // Cập nhật tất cả các đối tượng
-        for (GameObject obj : gameObjects) {
-            obj.update();
-        }
+    // Cập nhật tất cả các đối tượng
+    for (GameObject obj : gameObjects) {
+        obj.update();
 
-        // Kiểm tra va chạm
-        checkCollisions();
-
-        // Loại bỏ các đối tượng "dead"
-        gameObjects.removeIf(GameObject::isDead);
-
-        // Sinh thêm kẻ địch hoặc boss
-        spawnEnemy();
-        if (score >= 100 && !bossExists) {
-            spawnBossEnemy();
-        }
-
-        // Cập nhật UI
-        scoreLabel.setText("Score: " + score);
-        livesLabel.setText("Lives: " + numLives);
-
-        // Kiểm tra nếu hết mạng
-        if (numLives <= 0) {
-            resetGame();
+        // Kiểm tra nếu Enemy vượt quá đáy khung hình
+        if (obj instanceof Enemy && obj.getY() > HEIGHT) {
+            obj.setDead(true); // Đánh dấu Enemy là "dead"
+            numLives--; // Giảm số mạng
         }
     }
+
+    // Kiểm tra va chạm
+    checkCollisions();
+
+    // Loại bỏ các đối tượng "dead"
+    gameObjects.removeIf(GameObject::isDead);
+
+    // Sinh thêm kẻ địch hoặc boss
+    spawnEnemy();
+    if (score >= 100 && !bossExists) {
+        spawnBossEnemy();
+    }
+
+    // Cập nhật UI
+    scoreLabel.setText("Score: " + score);
+
+    // Kiểm tra nếu hết mạng
+    if (numLives <= 0) {
+        resetGame();
+    }
+}
 
     private void render() {
         // Vẽ ảnh nền
@@ -156,14 +162,34 @@ public class SpaceShooter extends Application {
         for (GameObject obj : gameObjects) {
             obj.render(gc);
         }
+
+        // Vẽ số mạng bằng hình ảnh trái tim
+        drawLives();
     }
 
-    private void spawnEnemy() {
-        if (Math.random() < 0.02) { // Xác suất sinh kẻ địch
-            double x = Math.random() * (WIDTH - Enemy.WIDTH) + Enemy.WIDTH / 2;
-            gameObjects.add(new Enemy(x, -Enemy.HEIGHT / 2));
+    private void drawLives() {
+        // Vẽ chữ "Lives:" ở góc trên bên phải
+        gc.setFill(Color.WHITE);
+        gc.setFont(javafx.scene.text.Font.font(20)); // Đặt font chữ
+        gc.fillText("Lives:", WIDTH - 200, 30); // Dịch chữ "Lives:" sang trái một chút
+
+        // Vẽ hình ảnh trái tim bên phải chữ "Lives:"
+        if (heartImage != null) {
+            for (int i = 0; i < numLives; i++) {
+                gc.drawImage(heartImage, WIDTH - 140 + i * 40, 10, 20, 20); // Dịch trái tim sang trái một chút
+            }
+        } else {
+            // Nếu không tải được ảnh, hiển thị số mạng bằng chữ
+            gc.fillText(String.valueOf(numLives), WIDTH - 140, 30);
         }
     }
+
+private void spawnEnemy() {
+    if (Math.random() < 0.005) { // Giảm xác suất sinh kẻ địch
+        double x = Math.random() * (WIDTH - Enemy.WIDTH) + Enemy.WIDTH / 2;
+        gameObjects.add(new Enemy(x, -Enemy.HEIGHT / 2));
+    }
+}
 
     private void spawnBossEnemy() {
         bossExists = true;
@@ -182,9 +208,15 @@ public class SpaceShooter extends Application {
                         obj2.setDead(true);
                         numLives--;
                     } else if (obj1 instanceof Bullet && obj2 instanceof BossEnemy) {
-                        ((BossEnemy) obj2).takeDamage();
-                        obj1.setDead(true);
-                        if (obj2.isDead()) {
+                        Bullet bullet = (Bullet) obj1;
+                        BossEnemy boss = (BossEnemy) obj2;
+
+                        // Gây sát thương cho boss
+                        boss.takeDamage(bullet.getDamage());
+                        bullet.setDead(true);
+
+                        // Nếu boss chết, tăng điểm và đánh dấu boss không còn tồn tại
+                        if (boss.isDead()) {
                             score += 50;
                             bossExists = false;
                         }

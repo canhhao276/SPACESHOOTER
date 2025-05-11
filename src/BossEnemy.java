@@ -55,8 +55,8 @@ public class BossEnemy extends Enemy {
         }
     }
 
-    public void takeDamage() {
-        health--;
+    public void takeDamage(int damage) {
+        health -= damage; // Trừ máu theo lượng sát thương
         if (health <= 0) {
             setDead(true);
         }

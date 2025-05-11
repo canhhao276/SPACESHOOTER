@@ -9,10 +9,16 @@ public class Bullet extends GameObject {
     private static final double SPEED = 7;
 
     private boolean dead;
+    private int damage;
 
     public Bullet(double x, double y) {
         super(x, y, WIDTH, HEIGHT);
         this.dead = false;
+        this.damage = 17;
+    }
+
+    public int getDamage() {
+        return damage;
     }
 
     @Override

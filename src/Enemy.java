@@ -7,7 +7,7 @@ public class Enemy extends GameObject {
     protected static final int WIDTH = 40;
     protected static final int HEIGHT = 40;
 
-    public static double SPEED = 1;
+    public static double SPEED = 0.5;
 
     private boolean dead;
     private Image enemyImage;
@@ -22,12 +22,7 @@ public class Enemy extends GameObject {
 
     @Override
     public void update() {
-        y += SPEED;
-
-        // Nếu ra khỏi màn hình (giả sử cao 600), thì đánh dấu là chết
-        if (y - HEIGHT / 2 > 600) {
-            this.dead = true;
-        }
+        y += SPEED; // Enemy di chuyển xuống dưới
     }
 
     @Override
