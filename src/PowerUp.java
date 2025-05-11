@@ -1,4 +1,6 @@
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
+import javafx.scene.paint.Color;
 
 /**
  * Skeleton for PowerUp. Students must implement movement,
@@ -16,6 +18,8 @@ public class PowerUp extends GameObject {
     // Flag indicating whether the power-up should be removed
     private boolean dead;
 
+    private Image powerUpImage;
+
     /**
      * Constructs a PowerUp at the given position.
      * @param x initial X position
@@ -23,7 +27,15 @@ public class PowerUp extends GameObject {
      */
     public PowerUp(double x, double y) {
         super(x, y, WIDTH, HEIGHT);
-        // TODO: initialize dead flag, load sprite if needed
+        this.dead = false;
+
+        // Load the power-up image
+        try {
+            this.powerUpImage = new Image("file:res/powerup.png");
+        } catch (Exception e) {
+            System.out.println("Không thể tải ảnh powerup: " + e.getMessage());
+            this.powerUpImage = null; // Fallback in case the image cannot be loaded
+        }
     }
 
     /**
@@ -33,6 +45,11 @@ public class PowerUp extends GameObject {
     public void update() {
         // Move power-up vertically by SPEED
         this.y += SPEED;
+
+        // Mark as dead if it moves out of the screen (assuming screen height is 600)
+        if (this.y - HEIGHT / 2 > 600) {
+            this.dead = true;
+        }
     }
 
     /**
@@ -41,7 +58,14 @@ public class PowerUp extends GameObject {
      */
     @Override
     public void render(GraphicsContext gc) {
-        // TODO: draw sprite or fallback (e.g., colored rectangle)
+        if (powerUpImage != null) {
+            // Draw the power-up image
+            gc.drawImage(powerUpImage, x - WIDTH / 2, y - HEIGHT / 2, WIDTH, HEIGHT);
+        } else {
+            // Fallback: draw a yellow rectangle if the image is not available
+            gc.setFill(Color.YELLOW);
+            gc.fillRect(x - WIDTH / 2, y - HEIGHT / 2, WIDTH, HEIGHT);
+        }
     }
 
     /**
