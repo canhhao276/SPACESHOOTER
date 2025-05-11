@@ -7,6 +7,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import javafx.scene.image.Image;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -30,6 +31,8 @@ public class SpaceShooter extends Application {
 
     private Label scoreLabel;
     private Label livesLabel;
+
+    private Image backgroundImage;
 
     public static void main(String[] args) {
         launch(args);
@@ -58,6 +61,14 @@ public class SpaceShooter extends Application {
         primaryStage.setScene(scene);
         primaryStage.setTitle("Space Shooter");
         primaryStage.show();
+
+        // Tải ảnh nền
+        try {
+            backgroundImage = new Image("file:res/background.png");
+        } catch (Exception e) {
+            System.out.println("Không thể tải ảnh nền: " + e.getMessage());
+            backgroundImage = null; // Fallback nếu không tải được ảnh
+        }
 
         initGame();
         initEventHandlers();
@@ -133,8 +144,15 @@ public class SpaceShooter extends Application {
     }
 
     private void render() {
-        gc.clearRect(0, 0, WIDTH, HEIGHT);
+        // Vẽ ảnh nền
+        if (backgroundImage != null) {
+            gc.drawImage(backgroundImage, 0, 0, WIDTH, HEIGHT); // Vẽ ảnh nền toàn màn hình
+        } else {
+            gc.setFill(Color.BLACK); // Nếu không tải được ảnh, vẽ nền màu đen
+            gc.fillRect(0, 0, WIDTH, HEIGHT);
+        }
 
+        // Vẽ các đối tượng trong trò chơi
         for (GameObject obj : gameObjects) {
             obj.render(gc);
         }
