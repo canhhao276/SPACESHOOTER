@@ -1,0 +1,89 @@
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
+import javafx.scene.image.Image;
+
+import java.util.List;
+
+public class BossEnemy extends Enemy {
+
+    private int health;
+
+    private static final int WIDTH = 50;
+    static final int HEIGHT = 50;
+
+    private double horizontalSpeed;
+
+    // Để đảo chiều di chuyển ngang
+    private boolean movingRight = true;
+    private Image bossImage;
+
+    public BossEnemy(double x, double y) {
+        super(x, y);
+        this.health = 50; // Tăng máu của boss
+        this.horizontalSpeed = 2;
+        this.width = WIDTH;
+        this.height = HEIGHT;
+
+        // Tải ảnh boss từ thư mục res
+        try {
+            this.bossImage = new Image("file:res/boss.png");
+        } catch (Exception e) {
+            System.out.println("Không thể tải ảnh boss: " + e.getMessage());
+            this.bossImage = null; // Đảm bảo không bị lỗi nếu ảnh không tải được
+        }
+    }
+
+    @Override
+    public void update() {
+        y += SPEED / 2;  // Boss di chuyển chậm dọc
+
+        // Di chuyển ngang qua lại
+        if (movingRight) {
+            x += horizontalSpeed;
+            if (x + WIDTH / 2 > 800) {  // giả sử chiều rộng màn hình là 800
+                movingRight = false;
+            }
+        } else {
+            x -= horizontalSpeed;
+            if (x - WIDTH / 2 < 0) {
+                movingRight = true;
+            }
+        }
+
+        if (health <= 0) {
+            setDead(true);
+        }
+    }
+
+    public void takeDamage() {
+        health--;
+        if (health <= 0) {
+            setDead(true);
+        }
+    }
+
+    public void shoot(List<GameObject> newObjects) {
+        // Bắn 3 viên đạn cùng lúc
+        newObjects.add(new EnemyBullet(x, y + HEIGHT / 2));
+        newObjects.add(new EnemyBullet(x - 10, y + HEIGHT / 2));
+        newObjects.add(new EnemyBullet(x + 10, y + HEIGHT / 2));
+    }
+
+    @Override
+    public void render(GraphicsContext gc) {
+        if (bossImage != null) {
+            // Vẽ ảnh boss
+            gc.drawImage(bossImage, x - WIDTH / 2, y - HEIGHT / 2, WIDTH, HEIGHT);
+        } else {
+            // Nếu không tải được ảnh, vẽ hình chữ nhật thay thế
+            gc.setFill(Color.DARKMAGENTA);
+            gc.fillRect(x - WIDTH / 2, y - HEIGHT / 2, WIDTH, HEIGHT);
+        }
+
+        // Vẽ thanh máu bên trên Boss
+        gc.setFill(Color.RED);
+        gc.fillRect(x - 50, y - 60, 100, 10); // Thanh máu đỏ (nền)
+        gc.setFill(Color.LIMEGREEN);
+        gc.fillRect(x - 50, y - 60, 100 * ((double) health / 50), 10); // Thanh máu xanh (tỷ lệ máu)
+    }
+}
