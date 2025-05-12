@@ -43,12 +43,11 @@ public class PowerUp extends GameObject {
      */
     @Override
     public void update() {
-        // Move power-up vertically by SPEED
-        this.y += SPEED;
+        y += SPEED; // Di chuyển power-up xuống dưới
 
-        // Mark as dead if it moves out of the screen (assuming screen height is 600)
-        if (this.y - HEIGHT / 2 > 600) {
-            this.dead = true;
+        // Kiểm tra nếu power-up ra khỏi khung hình
+        if (y > SpaceShooter.HEIGHT) {
+            setDead(true); // Đánh dấu power-up là "dead"
         }
     }
 

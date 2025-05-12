@@ -17,11 +17,11 @@ public class EnemyBullet extends GameObject {
 
     @Override
     public void update() {
-        y += SPEED;
+        y += SPEED; // Di chuyển viên đạn xuống dưới
 
-        // Nếu ra khỏi màn hình dưới thì đánh dấu bị loại
-        if (y - HEIGHT / 2 > 600) { // giả sử chiều cao màn hình là 600
-            this.dead = true;
+        // Kiểm tra nếu viên đạn ra khỏi khung hình
+        if (y > SpaceShooter.HEIGHT) {
+            setDead(true); // Đánh dấu viên đạn là "dead"
         }
     }
 

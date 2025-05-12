@@ -19,8 +19,8 @@ import java.util.List;
 
 public class SpaceShooter extends Application {
 
-    public static final int WIDTH = 800;
-    public static final int HEIGHT = 600;
+    public static final int WIDTH = 600;
+    public static final int HEIGHT = 800;
     public static int numLives = 3;
 
     private int score;
@@ -128,9 +128,9 @@ public class SpaceShooter extends Application {
 
         // Sinh thêm kẻ địch, boss, và power-up
         spawnEnemy();
-        if (score - lastBossSpawnScore >= 400 && !bossExists) { // Kiểm tra nếu đạt đủ 400 điểm kể từ lần xuất hiện boss trước đó
+        if (score >= lastBossSpawnScore + 400 && !bossExists) { // Kiểm tra nếu đạt mốc 400 điểm kế tiếp
             spawnBossEnemy();
-            lastBossSpawnScore = score; // Cập nhật điểm số khi boss xuất hiện
+            lastBossSpawnScore += 400; // Cập nhật mốc điểm tiếp theo
         }
         spawnPowerUp(); // Gọi phương thức sinh power-up
 

@@ -39,16 +39,23 @@ public class BossEnemy extends Enemy {
     public void update() {
         y += SPEED / 2;  // Boss di chuyển chậm dọc
 
+        // Giới hạn di chuyển dọc trong khung hình
+        if (y + HEIGHT > SpaceShooter.HEIGHT) {
+            y = SpaceShooter.HEIGHT - HEIGHT; // Giới hạn phía dưới
+        }
+
         // Di chuyển ngang qua lại
         if (movingRight) {
             x += horizontalSpeed;
-            if (x + WIDTH / 2 > 800) {  // giả sử chiều rộng màn hình là 800
-                movingRight = false;
+            if (x + WIDTH / 2 > SpaceShooter.WIDTH) {  // Giới hạn bên phải
+                x = SpaceShooter.WIDTH - WIDTH / 2;
+                movingRight = false; // Đổi hướng
             }
         } else {
             x -= horizontalSpeed;
-            if (x - WIDTH / 2 < 0) {
-                movingRight = true;
+            if (x - WIDTH / 2 < 0) {  // Giới hạn bên trái
+                x = WIDTH / 2;
+                movingRight = true; // Đổi hướng
             }
         }
 
