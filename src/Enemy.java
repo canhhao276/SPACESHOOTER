@@ -1,8 +1,12 @@
+import java.util.List;
+
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.image.Image;
 
 public class Enemy extends GameObject {
+
+    private static final double SHOOT_PROBABILITY = 0.001;
 
     protected static final int WIDTH = 40;
     protected static final int HEIGHT = 40;
@@ -20,9 +24,19 @@ public class Enemy extends GameObject {
         this.enemyImage = new Image("file:res/enemy.png");
     }
 
+    public void shoot(List<GameObject> gameObjects) {
+        // Tạo một viên đạn mới tại vị trí của Enemy
+        EnemyBullet bullet = new EnemyBullet(this.x, this.y + HEIGHT / 2);
+        gameObjects.add(bullet);
+    }
     @Override
     public void update() {
         y += SPEED; // Enemy di chuyển xuống dưới
+
+        // Xác suất bắn đạn
+        if (Math.random() < SHOOT_PROBABILITY) {
+            shoot(SpaceShooter.getGameObjects());
+        }
     }
 
     @Override

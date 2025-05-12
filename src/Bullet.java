@@ -6,7 +6,7 @@ public class Bullet extends GameObject {
     public static final int WIDTH = 4;
     public static final int HEIGHT = 15;
 
-    private static final double SPEED = 7;
+    private static final double SPEED = 6;
 
     private boolean dead;
     private int damage;

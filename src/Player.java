@@ -19,6 +19,12 @@ public class Player extends GameObject {
 
     private Image playerImage;
 
+    private int bulletCount = 1;
+
+    public void increaseBulletCount() {
+        bulletCount++; // Tăng số lượng đạn bắn
+    } 
+
     public Player(double x, double y) {
         super(x, y, WIDTH, HEIGHT);
         this.health = 3; // mặc định 3 mạng
@@ -56,22 +62,29 @@ public class Player extends GameObject {
         if (moveForward) y -= SPEED;
         if (moveBackward) y += SPEED;
 
-        // Giới hạn trong màn hình (giả sử kích thước 800x600)
-        x = Math.max(getWidth() / 2, Math.min(800 - getWidth() / 2, x));
-        y = Math.max(getHeight() / 2, Math.min(600 - getHeight() / 2, y));
+        // Giới hạn trong màn hình (tính từ góc trên bên trái)
+        x = Math.max(0, Math.min(SpaceShooter.WIDTH - getWidth(), x)); // Giới hạn theo chiều ngang
+        y = Math.max(0, Math.min(SpaceShooter.HEIGHT - getHeight(), y)); // Giới hạn theo chiều dọc
     }
 
     @Override
     public void render(GraphicsContext gc) {
         if (playerImage != null) {
-            // Vẽ ảnh player
-            gc.drawImage(playerImage, x - WIDTH / 2, y - HEIGHT / 2, WIDTH, HEIGHT);
+            // Vẽ ảnh player từ góc trên bên trái
+            gc.drawImage(playerImage, x, y, WIDTH, HEIGHT);
         } else {
             // Nếu không tải được ảnh, vẽ hình chữ nhật thay thế
             gc.setFill(Color.CYAN);
-            gc.fillRect(x - WIDTH / 2, y - HEIGHT / 2, WIDTH, HEIGHT);
+            gc.fillRect(x, y, WIDTH, HEIGHT);
         }
+    }
 
+    public void setX(double x) {
+        this.x = x;
+    }
+
+    public void setY(double y) {
+        this.y = y;
     }
 
     public void setMoveLeft(boolean moveLeft) {
@@ -90,9 +103,13 @@ public class Player extends GameObject {
         this.moveBackward = moveBackward;
     }
 
-    public void shoot(List<GameObject> newObjects) {
-        Bullet bullet = new Bullet(x, y - HEIGHT / 2);
-        newObjects.add(bullet);
+    public void shoot(List<GameObject> gameObjects) {
+        for (int i = 0; i < bulletCount; i++) {
+            double offset = (i - bulletCount / 2.0) * 10; // Tính toán vị trí đạn lệch
+            double bulletX = x + getWidth() / 2 + offset; // Tọa độ X của viên đạn (giữa Player)
+            double bulletY = y; // Tọa độ Y của viên đạn (phía trên Player)
+            gameObjects.add(new Bullet(bulletX, bulletY));
+        }
     }
 
     public void setDead(boolean dead) {

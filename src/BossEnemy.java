@@ -6,6 +6,8 @@ import java.util.List;
 
 public class BossEnemy extends Enemy {
 
+    private static final double SHOOT_PROBABILITY = 0.01;
+
     private int health;
 
     private static final int WIDTH = 50;
@@ -50,6 +52,12 @@ public class BossEnemy extends Enemy {
             }
         }
 
+        // Xác suất bắn đạn cao hơn
+        if (Math.random() < SHOOT_PROBABILITY) {
+            shoot(SpaceShooter.getGameObjects());
+        }
+
+        // Kiểm tra nếu máu <= 0
         if (health <= 0) {
             setDead(true);
         }
